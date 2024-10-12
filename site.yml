@@ -1,0 +1,32 @@
+- hosts: local
+  tasks:
+    - name: Create Backup Directory
+      file:
+        path: ~/home-server/backup  # Specify the desired directory path
+        state: directory
+        mode: '0755'  # Optional: Set permissions for the directory  
+
+    - name: Store Backup Bash Script
+      copy:
+        src: ./backup_script.sh
+        dest: ~/home-server/backup/backup_script.sh
+        mode: '0755'
+
+    - name: Store Backup Bash Config
+      copy:
+        src: ./backup.conf
+        dest: ~/home-server/backup/backup.conf
+        mode: '0755'
+
+    - name: Create a directory if it does not exist
+      file:
+        path: ~/home-server/backup/backup.log
+        state: touch
+        mode: '0755'
+
+    - name: Backup cron job
+      cron:
+        name: "Backup"
+        minute: "0"
+        hour: "0"
+        job: "~/home-server/backup/backup_script.sh >> ~/home-server/backup/backup.log 2>&1"
